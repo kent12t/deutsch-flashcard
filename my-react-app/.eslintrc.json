@@ -12,5 +12,6 @@
   },
   "rules": {
     // Add your custom rules here
+    "no-unused-vars": "warn"
   }
 }
