@@ -11,7 +11,7 @@ function Flashcard({ data, mode }) {
 
   return (
     <Paper padding="md" style={{ marginBottom: '16px' }}>
-      <Text align="center" size="xl" weight={700} style={{ marginBottom: '16px' }}>
+      <Text align="center" size="xl" c='pink' fw={700} style={{ marginBottom: '16px' }}>
         {mode === 'english' ? data.english : data.german}
       </Text>
       {mode === 'german' && data.type === 'noun' && (
@@ -37,6 +37,7 @@ Flashcard.propTypes = {
     german: PropTypes.string.isRequired,
     type: PropTypes.oneOf(['noun', 'verb', 'adjective']).isRequired,
     article: PropTypes.string,
+    plural: PropTypes.string,
   }).isRequired,
   mode: PropTypes.oneOf(['english', 'german']).isRequired,
 };

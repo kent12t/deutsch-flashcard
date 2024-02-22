@@ -13,7 +13,7 @@ import { createTheme, MantineProvider } from '@mantine/core';
 
 // eslint-disable-next-line no-undef
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <MantineProvider>
+  <MantineProvider defaultColorScheme="dark">
     <App />
   </MantineProvider>
 );
