@@ -1,72 +1,81 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, { useState } from 'react';
-import { Box, Button, Container, Paper, Switch, Text, TextInput } from '@mantine/core';
-import { Flashcard } from './components';
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Container,
+  Paper,
+  Switch,
+  Text,
+  TextInput,
+} from "@mantine/core";
+import { Flashcard } from "./components";
 
 // Assuming you have your API token stored in a .env file
-const apiKey = process.env.AIRTABLE_TOKEN;
+// const apiKey = process.env.AIRTABLE_TOKEN;
 
-import Airtable from 'airtable';
+import Airtable from "airtable";
 
-var base = new Airtable({ apiKey: 'pat1JpGAPoqMI6wGK.766a65c9a30a8979775e623823e7ab97923eebcbb6f3788eeca62c7ebca14ada' }).base('appnrS9SBzzsSH6QZ');
+const base = new Airtable({
+  apiKey:
+    "pat1JpGAPoqMI6wGK.766a65c9a30a8979775e623823e7ab97923eebcbb6f3788eeca62c7ebca14ada",
+}).base("appnrS9SBzzsSH6QZ");
 // var base = new Airtable({ apiKey: apiKey }).base('appnrS9SBzzsSH6QZ');
 
-base('vocab').select({
-  // Selecting the first 3 records in Grid view:
-  maxRecords: 3,
-  view: "Grid view"
-}).eachPage(function page(records, fetchNextPage) {
-  // This function (`page`) will get called for each page of records.
+// const data = [
+//   {
+//     english: "apple",
+//     german: "Apfel",
+//     type: "noun",
+//     article: "der",
+//     plural: "Äpfel",
+//   },
+//   {
+//     english: "house",
+//     german: "Haus",
+//     type: "noun",
+//     article: "das",
+//     plural: "Häuser",
+//   },
+//   {
+//     english: "order",
+//     german: "Bestellen",
+//     type: "others",
+//   },
+//   // Add more flashcard data as needed
+// ];
 
-  records.forEach(function (record) {
-    console.log('Retrieved', record.get('english'));
-  });
-
-  // To fetch the next page of records, call `fetchNextPage`.
-  // If there are more records, `page` will get called again.
-  // If there are no more records, `done` will get called.
-  fetchNextPage();
-
-}, function done(err) {
-  if (err) { console.error(err); return; }
-});
-
-const data = [
-  {
-    english: 'apple',
-    german: 'Apfel',
-    type: 'noun',
-    article: 'der',
-    plural: 'Äpfel'
-  },
-  {
-    english: 'house',
-    german: 'Haus',
-    type: 'noun',
-    article: 'das',
-    plural: 'Häuser'
-  },
-  {
-    english: 'order',
-    german: 'Bestellen',
-    type: 'others',
-  },
-  // Add more flashcard data as needed
-];
+var data = [];
 
 function App() {
   // random starting index
-  const [flashcardIndex, setFlashcardIndex] = useState(Math.floor(Math.random() * data.length));
-  const [inputValue, setInputValue] = useState('');
-  const [selectedArticle, setSelectedArticle] = useState('');
+  const [flashcardIndex, setFlashcardIndex] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [pluralValue, setPluralValue] = useState("");
+  const [selectedArticle, setSelectedArticle] = useState("");
   const [showAnswer, setShowAnswer] = useState(false);
   const [correct, setCorrect] = useState(false);
   const [incorrectAttempt, setIncorrectAttempt] = useState(false);
+
+  // var airtable_data = [];
+  const [dataReady, setDataReady] = useState(false);
+  const handleDataReady = () => {
+    if (!dataReady) {
+      setDataReady(true);
+      // random starting index
+      setFlashcardIndex(Math.floor(Math.random() * data.length));
+      console.log(data.length);
+    }
+  };
 
   // debug state
   const [debug, setDebug] = useState(false);
   const handleDebug = () => {
     setDebug(!debug);
+  };
+
+  const handlePluralChange = (event) => {
+    setPluralValue(event.target.value);
   };
 
   const handleInputChange = (event) => {
@@ -80,8 +89,11 @@ function App() {
   const handleCheckAnswer = () => {
     const { german, article, type } = data[flashcardIndex];
 
-    if (type == 'noun') {
-      if (inputValue.trim() === german && selectedArticle.toLowerCase() === article.toLowerCase()) {
+    if (type == "noun") {
+      if (
+        inputValue.trim() === german &&
+        selectedArticle.toLowerCase() === article.toLowerCase()
+      ) {
         setCorrect(true);
       } else {
         setIncorrectAttempt(true);
@@ -93,7 +105,6 @@ function App() {
         setIncorrectAttempt(true);
       }
     }
-
   };
 
   const handleNextCard = () => {
@@ -104,8 +115,10 @@ function App() {
       newIndex = Math.floor(Math.random() * data.length);
     }
     setFlashcardIndex(newIndex);
-    setInputValue('');
-    setSelectedArticle('');
+
+    setInputValue("");
+    setPluralValue("");
+    setSelectedArticle("");
     setShowAnswer(false);
     setCorrect(false);
     setIncorrectAttempt(false);
@@ -118,72 +131,175 @@ function App() {
 
   const handleHideAnswer = () => {
     setShowAnswer(false);
-  }
+  };
+
+  base("vocab")
+    .select({
+      maxRecords: 999,
+      view: "Grid view",
+    })
+    .eachPage(
+      function page(records, fetchNextPage) {
+        // This function (`page`) will get called for each page of records.
+
+        records.forEach(function (record) {
+          data.push(record.fields);
+        });
+
+        console.log("Retrieved");
+        // To fetch the next page of records, call `fetchNextPage`.
+        // If there are more records, `page` will get called again.
+        // If there are no more records, `done` will get called.
+        fetchNextPage();
+      },
+      function done(err) {
+        // console.log(airtable_data);
+        console.log("Data ready");
+        handleDataReady();
+        // data = airtable_data;
+
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        return;
+      }
+    );
 
   return (
     <Container size="md">
-      <Paper padding="lg" shadow="sm" style={{ minHeight: '300px' }}>
-        {/* debug switch */}
-
-        <Box my='sm' style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Switch checked={debug} onChange={handleDebug} style={{ marginBottom: '16px' }} label='Show debug info' />
+      {/* Add a loading screen when data not ready */}
+      {!dataReady && (
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <Text>Loading...</Text>
         </Box>
-        <Flashcard data={data[flashcardIndex]} mode="english" />
-        <TextInput
-          placeholder="Enter your answer..."
-          value={inputValue}
-          onChange={handleInputChange}
-          style={{ marginTop: '16px' }}
-        />
-        {/* no article for non-nouns */}
-        {data[flashcardIndex].type == 'noun' && (<Box style={{ marginTop: '16px' }}>
-          <Text>Select the article:</Text>
-          <Box>
-            {['der', 'die', 'das'].map((article) => (
-              <Button
-                key={article}
-                onClick={() => handleArticleSelection(article)}
-                variant={selectedArticle === article ? 'outline' : 'filled'}
-                style={{ marginRight: '8px', marginTop: '8px' }}
-              >
-                {article}
-              </Button>
-            ))}
+      )}
+
+      {data.length > 1 && (
+        <Paper padding="lg" shadow="sm" style={{ minHeight: "300px" }}>
+          {/* debug switch */}
+          <Box my="sm" style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Switch
+              checked={debug}
+              onChange={handleDebug}
+              style={{ marginBottom: "16px" }}
+              label="Show debug info"
+            />
           </Box>
-        </Box>)}
-        <Button onClick={handleCheckAnswer} style={{ marginTop: '8px' }}>
-          Check Answer
-        </Button>
-        {incorrectAttempt && <Box style={{ marginTop: '16px' }}>
-          {/* button that switch between show and hide asnwers */}
-          <Button onClick={showAnswer ? handleHideAnswer : handleShowAnswer} style={{ marginTop: '8px', marginBottom: '16px' }}>
-            {showAnswer ? 'Hide Answer' : 'Show Answer'}
+
+          <Flashcard data={data[flashcardIndex]} mode="english" />
+
+          <TextInput
+            placeholder="Enter your answer..."
+            value={inputValue}
+            onChange={handleInputChange}
+            style={{ marginTop: "16px" }}
+          />
+
+          {/* no article for non-nouns */}
+          {data[flashcardIndex].type == "noun" && (
+            <>
+              <Box style={{ marginTop: "16px" }}>
+                <Text>Select the article:</Text>
+                <Box>
+                  {["der", "die", "das"].map((article) => (
+                    <Button
+                      key={article}
+                      onClick={() => handleArticleSelection(article)}
+                      variant={
+                        selectedArticle === article ? "outline" : "filled"
+                      }
+                      style={{ marginRight: "8px", marginTop: "8px" }}
+                    >
+                      {article}
+                    </Button>
+                  ))}
+                </Box>
+              </Box>
+
+              <Box style={{ marginTop: "16px" }}>
+                {/* plural for nouns */}
+                <TextInput
+                  placeholder="Enter the plural form..."
+                  value={pluralValue}
+                  onChange={handlePluralChange}
+                  style={{ marginTop: "16px" }}
+                />
+              </Box>
+            </>
+          )}
+          <Button onClick={handleCheckAnswer} style={{ marginTop: "8px" }}>
+            Check Answer
           </Button>
+          {incorrectAttempt && (
+            <Box style={{ marginTop: "16px" }}>
+              {/* button that switch between show and hide asnwers */}
+              <Button
+                onClick={showAnswer ? handleHideAnswer : handleShowAnswer}
+                style={{ marginTop: "8px", marginBottom: "16px" }}
+              >
+                {showAnswer ? "Hide Answer" : "Show Answer"}
+              </Button>
 
-          {showAnswer && <Text> {data[flashcardIndex].article} {data[flashcardIndex].german}</Text>}
-        </Box>}
-        {(incorrectAttempt && !correct) && (
-          <Text align="center" style={{ marginTop: '16px', color: 'red' }}>Sorry, that's incorrect. Please try again.</Text>
-        )}
-        {correct && (
-          <Box>
-            {(correct) && <Text align="center" style={{ marginTop: '16px', marginBottom: '8px' }}>Congratulations! You're correct!</Text>}
-            <Button onClick={handleNextCard}>Next Card</Button>
-          </Box>
-        )}
+              {showAnswer && (
+                <Text>
+                  {" "}
+                  {data[flashcardIndex].article} {data[flashcardIndex].german}
+                </Text>
+              )}
+            </Box>
+          )}
+          {incorrectAttempt && !correct && (
+            <Text align="center" style={{ marginTop: "16px", color: "red" }}>
+              Sorry, that's incorrect. Please try again.
+            </Text>
+          )}
+          {correct && (
+            <Box>
+              {correct && (
+                <Text
+                  align="center"
+                  style={{ marginTop: "16px", marginBottom: "8px" }}
+                >
+                  Congratulations! You're correct!
+                </Text>
+              )}
+              <Button onClick={handleNextCard}>Next Card</Button>
+            </Box>
+          )}
 
-        {debug && <Box>
-          {/* debug info */}
-          <Text size='lg' td='underline' fw={700} align="center" style={{ marginTop: '16px' }}>Debug Info</Text>
-          <Text align="left">Input Value: {inputValue}</Text>
-          <Text align="left">Selected Article: {selectedArticle}</Text>
-          <Text align="left">Type: {data[flashcardIndex].type}</Text>
-          <Text align="left">Show Answer: {showAnswer.toString()}</Text>
-          <Text align="left">Correct: {correct.toString()}</Text>
-          <Text align="left">Incorrect Attempt: {incorrectAttempt.toString()}</Text>
-
-        </Box>}
-      </Paper>
+          {debug && (
+            <Box>
+              {/* debug info */}
+              <Text
+                size="lg"
+                td="underline"
+                fw={700}
+                align="center"
+                style={{ marginTop: "16px" }}
+              >
+                Debug Info
+              </Text>
+              <Text align="left">Input Value: {inputValue}</Text>
+              <Text align="left">Selected Article: {selectedArticle}</Text>
+              <Text align="left">Type: {data[flashcardIndex].type}</Text>
+              <Text align="left">Show Answer: {showAnswer.toString()}</Text>
+              <Text align="left">Correct: {correct.toString()}</Text>
+              <Text align="left">
+                Incorrect Attempt: {incorrectAttempt.toString()}
+              </Text>
+            </Box>
+          )}
+        </Paper>
+      )}
     </Container>
   );
 }
