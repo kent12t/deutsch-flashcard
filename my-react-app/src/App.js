@@ -3,6 +3,34 @@ import React, { useState } from 'react';
 import { Box, Button, Container, Paper, Switch, Text, TextInput } from '@mantine/core';
 import { Flashcard } from './components';
 
+// Assuming you have your API token stored in a .env file
+const apiKey = process.env.AIRTABLE_TOKEN;
+
+import Airtable from 'airtable';
+
+var base = new Airtable({ apiKey: 'pat1JpGAPoqMI6wGK.766a65c9a30a8979775e623823e7ab97923eebcbb6f3788eeca62c7ebca14ada' }).base('appnrS9SBzzsSH6QZ');
+// var base = new Airtable({ apiKey: apiKey }).base('appnrS9SBzzsSH6QZ');
+
+base('vocab').select({
+  // Selecting the first 3 records in Grid view:
+  maxRecords: 3,
+  view: "Grid view"
+}).eachPage(function page(records, fetchNextPage) {
+  // This function (`page`) will get called for each page of records.
+
+  records.forEach(function (record) {
+    console.log('Retrieved', record.get('english'));
+  });
+
+  // To fetch the next page of records, call `fetchNextPage`.
+  // If there are more records, `page` will get called again.
+  // If there are no more records, `done` will get called.
+  fetchNextPage();
+
+}, function done(err) {
+  if (err) { console.error(err); return; }
+});
+
 const data = [
   {
     english: 'apple',
@@ -105,7 +133,6 @@ function App() {
           placeholder="Enter your answer..."
           value={inputValue}
           onChange={handleInputChange}
-          fullWidth
           style={{ marginTop: '16px' }}
         />
         {/* no article for non-nouns */}

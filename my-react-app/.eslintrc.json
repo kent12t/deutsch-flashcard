@@ -4,14 +4,19 @@
     "plugin:react/recommended"
   ],
   "parserOptions": {
-    "ecmaVersion": 2021,
+    "ecmaVersion": "latest",
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
     }
   },
+  "env": {
+        "browser": true,
+        "node": true
+  },
   "rules": {
     // Add your custom rules here
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "no-console": "off" // Disable the no-console rule
   }
 }

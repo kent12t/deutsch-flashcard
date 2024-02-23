@@ -35,7 +35,7 @@ Flashcard.propTypes = {
   data: PropTypes.shape({
     english: PropTypes.string.isRequired,
     german: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(['noun', 'verb', 'adjective']).isRequired,
+    type: PropTypes.oneOf(['noun', 'verb', 'adjective', 'others']).isRequired,
     article: PropTypes.string,
     plural: PropTypes.string,
   }).isRequired,
