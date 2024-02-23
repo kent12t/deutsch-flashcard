@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/deutsch-flashcard/static/css/main.d29a961f.css",
+    "main.js": "/deutsch-flashcard/static/js/main.9e87cb5a.js",
+    "index.html": "/deutsch-flashcard/index.html",
+    "main.d29a961f.css.map": "/deutsch-flashcard/static/css/main.d29a961f.css.map",
+    "main.9e87cb5a.js.map": "/deutsch-flashcard/static/js/main.9e87cb5a.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d29a961f.css",
+    "static/js/main.9e87cb5a.js"
+  ]
+}
