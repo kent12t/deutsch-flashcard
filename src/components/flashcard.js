@@ -17,7 +17,7 @@ function Flashcard({ data, mode }) {
 
   return (
     <>
-      <Paper radius="md" px='xl' py='xl' bg="gray.8" shadow="xl" withBorder>
+      <Paper radius="md" px='xl' py='xl' bg="gray.8" shadow="md">
         <Flex justify="center" align="center" direction="row" gap={60}>
 
           <Flex w='80%' justify="center" align="center">
@@ -62,7 +62,7 @@ function Flashcard({ data, mode }) {
 Flashcard.propTypes = {
   data: PropTypes.shape({
     english: PropTypes.string.isRequired,
-    german: PropTypes.string.isRequired,
+    german: PropTypes.string,
     type: PropTypes.oneOf(["noun", "verb", "adjective", "others"]).isRequired,
     verbType: PropTypes.oneOf(["1", "2", "3"]),
     article: PropTypes.string,

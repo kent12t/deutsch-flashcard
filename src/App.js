@@ -4,12 +4,14 @@ import {
   Box,
   Button,
   Container,
+  Flex,
+  Group,
   Paper,
   Switch,
   Text,
   TextInput,
 } from "@mantine/core";
-import { Flashcard } from "./components";
+import { DebugItem, Flashcard } from "./components";
 
 // Assuming you have your API token stored in a .env file
 // const apiKey = process.env.AIRTABLE_TOKEN;
@@ -87,11 +89,19 @@ function App() {
   };
 
   const handleCheckAnswer = () => {
-    const { german, article, type } = data[flashcardIndex];
+    const { german, article, type, plural } = data[flashcardIndex];
 
     if (type == "noun") {
+      // if german exist, check german and article and plural
+      var correctSingular = inputValue.trim() === german;
+      var correctPlural = pluralValue.trim() === plural;
+
+      var germanExist = german.trim() !== "";
+      var pluralExist = plural.trim() !== "";
+
       if (
-        inputValue.trim() === german &&
+        germanExist ? correctSingular : true &&
+          pluralExist ? correctPlural : true &&
         selectedArticle.toLowerCase() === article.toLowerCase()
       ) {
         setCorrect(true);
@@ -277,30 +287,40 @@ function App() {
           )}
 
           {debug && (
-            <Box>
-              {/* debug info */}
-              <Text
-                size="lg"
-                td="underline"
-                fw={700}
-                align="center"
-                style={{ marginTop: "16px" }}
-              >
-                Debug Info
-              </Text>
-              <Text align="left">Input Value: {inputValue}</Text>
-              <Text align="left">Selected Article: {selectedArticle}</Text>
-              <Text align="left">Type: {data[flashcardIndex].type}</Text>
-              <Text align="left">Show Answer: {showAnswer.toString()}</Text>
-              <Text align="left">Correct: {correct.toString()}</Text>
-              <Text align="left">
-                Incorrect Attempt: {incorrectAttempt.toString()}
-              </Text>
-            </Box>
+            <Paper w="100%" radius="md" px='md' py='md' bg="gray.8" shadow="md">
+              <Flex justify="center" align="center" direction="column" gap="sm">
+                {/* debug info */}
+                <Flex justify="center" align="center" direction="column">
+                  <Text
+                    size="lg"
+                    td="underline"
+                    fw={700}
+                    align="center"
+                    style={{ marginTop: "16px", fontFamily: 'Courier New, monospace' }}
+                  >
+                    Debug Info
+                  </Text>
+                </Flex>
+
+                <Group grow gap='md'>
+                  <DebugItem title="Input Value" value={inputValue} />
+                  <Text style={{ fontFamily: 'Courier New, monospace' }}>Selected Article: {selectedArticle}</Text>
+                  <Text style={{ fontFamily: 'Courier New, monospace' }}>Type: {data[flashcardIndex].type}</Text>
+                </Group>
+                <Group grow gap='md'>
+                  <Text style={{ fontFamily: 'Courier New, monospace' }}>Show Answer: {showAnswer.toString()}</Text>
+                  <Text style={{ fontFamily: 'Courier New, monospace' }}>Correct: {correct.toString()}</Text>
+                  <Text style={{ fontFamily: 'Courier New, monospace' }}>
+                    Incorrect Attempt: {incorrectAttempt.toString()}
+                  </Text>
+                </Group>
+              </Flex>
+            </Paper>
           )}
         </Paper>
-      )}
-    </Container>
+      )
+      }
+    </Container >
   );
 }
 
