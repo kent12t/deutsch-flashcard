@@ -1,17 +1,17 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { useState } from "react";
 import {
+  Badge,
   Box,
   Button,
   Container,
   Flex,
-  Group,
-  Paper,
-  Switch,
+  Stack,
   Text,
   TextInput,
+  Paper
 } from "@mantine/core";
-import { DebugItem, Flashcard } from "./components";
+import { Flashcard } from "./components";
 
 // Assuming you have your API token stored in a .env file
 // const apiKey = process.env.AIRTABLE_TOKEN;
@@ -56,10 +56,17 @@ function App() {
   const [pluralValue, setPluralValue] = useState("");
   const [selectedArticle, setSelectedArticle] = useState("");
   const [showAnswer, setShowAnswer] = useState(false);
+  const [shownAnswer, setShownAnswer] = useState(false);
   const [correct, setCorrect] = useState(false);
   const [incorrectAttempt, setIncorrectAttempt] = useState(false);
 
-  // var airtable_data = [];
+  // const [gameState, setGameState] = useState("new");
+  // // states: new, correct, incorrect, incorrect showed answer
+
+  // const handleGameState = (state) => {
+  //   setGameState(state);
+  // };
+
   const [dataReady, setDataReady] = useState(false);
   const handleDataReady = () => {
     if (!dataReady) {
@@ -68,12 +75,6 @@ function App() {
       setFlashcardIndex(Math.floor(Math.random() * data.length));
       console.log(data.length);
     }
-  };
-
-  // debug state
-  const [debug, setDebug] = useState(false);
-  const handleDebug = () => {
-    setDebug(!debug);
   };
 
   const handlePluralChange = (event) => {
@@ -93,11 +94,11 @@ function App() {
 
     if (type == "noun") {
       // if german exist, check german and article and plural
-      var correctSingular = inputValue.trim() === german;
-      var correctPlural = pluralValue.trim() === plural;
+      var correctSingular = inputValue === german;
+      var correctPlural = pluralValue === plural;
 
-      var germanExist = german.trim() !== "";
-      var pluralExist = plural.trim() !== "";
+      var germanExist = german !== "";
+      var pluralExist = plural !== "";
 
       if (
         germanExist ? correctSingular : true &&
@@ -109,7 +110,7 @@ function App() {
         setIncorrectAttempt(true);
       }
     } else {
-      if (inputValue.trim().toLowerCase() === german.toLowerCase()) {
+      if (inputValue.toLowerCase() === german.toLowerCase()) {
         setCorrect(true);
       } else {
         setIncorrectAttempt(true);
@@ -130,13 +131,14 @@ function App() {
     setPluralValue("");
     setSelectedArticle("");
     setShowAnswer(false);
+    setShownAnswer(false);
     setCorrect(false);
     setIncorrectAttempt(false);
   };
 
   const handleShowAnswer = () => {
     setShowAnswer(true);
-    setCorrect(true);
+    setShownAnswer(true);
   };
 
   const handleHideAnswer = () => {
@@ -189,135 +191,133 @@ function App() {
             minHeight: "100vh",
           }}
         >
-          <Text>Loading...</Text>
+          <Text size="3rem" fw={600} c='pink'>Loading...</Text>
         </Box>
       )}
 
+      {/* only run when the data exists */}
       {data.length > 1 && (
-        <Paper padding="lg" shadow="sm" style={{ minHeight: "300px" }}>
-          {/* debug switch */}
-          <Box my="sm" style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Switch
-              checked={debug}
-              onChange={handleDebug}
-              style={{ marginBottom: "16px" }}
-              label="Show debug info"
-            />
-          </Box>
-
+        <Stack py='lg' gap="lg" style={{ minHeight: "300px" }}>
           <Flashcard data={data[flashcardIndex]} mode="english" />
 
-          <TextInput
-            placeholder="Enter your answer..."
-            value={inputValue}
-            onChange={handleInputChange}
-            style={{ marginTop: "16px" }}
-          />
+          {/* Answer Box */}
 
-          {/* no article for non-nouns */}
-          {data[flashcardIndex].type == "noun" && (
-            <>
-              <Box style={{ marginTop: "16px" }}>
-                <Text>Select the article:</Text>
-                <Box>
-                  {["der", "die", "das"].map((article) => (
-                    <Button
-                      key={article}
-                      onClick={() => handleArticleSelection(article)}
-                      variant={
-                        selectedArticle === article ? "outline" : "filled"
-                      }
-                      style={{ marginRight: "8px", marginTop: "8px" }}
-                    >
-                      {article}
-                    </Button>
-                  ))}
-                </Box>
-              </Box>
+          <Flex w="100%" justify="center" align="center" direction="column" gap="md">
 
-              <Box style={{ marginTop: "16px" }}>
-                {/* plural for nouns */}
+            {/* article select -> no article for non-nouns */}
+            {data[flashcardIndex].type == "noun" && (
+
+              <Flex w='100%' justify="center" align="center" direction="row" gap="md">
+
+                {["der", "die", "das"].map((article) => (
+                  <Button
+                    size="lg"
+                    radius="md"
+                    key={article}
+                    onClick={() => handleArticleSelection(article)}
+                    variant={
+                      selectedArticle === article ? "outline" : "filled"
+                    }
+                  >
+                    {article}
+                  </Button>
+                ))}
+
+              </Flex>
+
+            )}
+
+            <Flex w="100%" justify='stretch' align='center' direction='column' gap="md">
+
+              {/* answer input */}
+
+              <TextInput
+                w='100%'
+                size="lg"
+                radius="md"
+                placeholder="Answer (case-sensitive)"
+                value={inputValue}
+                onChange={handleInputChange}
+              />
+
+              {/* plural for nouns */}
+              {data[flashcardIndex].type == "noun" &&
+
                 <TextInput
-                  placeholder="Enter the plural form or leave blank if there's no plural form."
+                  w='100%'
+                  size="lg"
+                  radius="md"
+                  placeholder="Plural or leave blank"
                   value={pluralValue}
                   onChange={handlePluralChange}
-                  style={{ marginTop: "16px" }}
                 />
-              </Box>
-            </>
-          )}
-          <Button onClick={handleCheckAnswer} style={{ marginTop: "8px" }}>
-            Check Answer
-          </Button>
-          {incorrectAttempt && (
-            <Box style={{ marginTop: "16px" }}>
-              {/* button that switch between show and hide asnwers */}
-              <Button
-                onClick={showAnswer ? handleHideAnswer : handleShowAnswer}
-                style={{ marginTop: "8px", marginBottom: "16px" }}
-              >
-                {showAnswer ? "Hide Answer" : "Show Answer"}
+              }
+            </Flex>
+          </Flex>
+
+          {/* check and answer buttons */}
+
+          <Flex justify="center" align="center" direction="row" gap="lg">
+
+            {correct || shownAnswer ?
+              <Button size="lg" color="green.7" onClick={handleNextCard}>
+                Next Card
+              </Button> :
+              <Button size="lg" onClick={handleCheckAnswer}>
+                Check Answer
               </Button>
 
-              {showAnswer && (
-                <Text>
-                  {" "}
-                  {data[flashcardIndex].article} {data[flashcardIndex].german}
-                </Text>
-              )}
-            </Box>
-          )}
-          {incorrectAttempt && !correct && (
-            <Text align="center" style={{ marginTop: "16px", color: "red" }}>
-              Sorry, that's incorrect. Please try again.
-            </Text>
-          )}
-          {correct && (
-            <Box>
-              {correct && (
-                <Text
-                  align="center"
-                  style={{ marginTop: "16px", marginBottom: "8px" }}
-                >
-                  Congratulations! You're correct!
-                </Text>
-              )}
-              <Button onClick={handleNextCard}>Next Card</Button>
-            </Box>
-          )}
+            }
 
-          {debug && (
-            <Paper w="100%" radius="md" px='md' py='md' bg="gray.8" shadow="md">
-              <Flex justify="center" align="center" direction="column" gap="sm">
-                {/* debug info */}
-                <Flex justify="center" align="center" direction="column">
-                  <Text
-                    size="lg"
-                    td="underline"
-                    fw={700}
-                    align="center"
-                    style={{ marginTop: "16px", fontFamily: 'Courier New, monospace' }}
-                  >
-                    Debug Info
-                  </Text>
-                </Flex>
+            <Button
+              variant={
+                showAnswer ? "outline" : "filled"
+              }
+              disabled={correct}
+              size="lg"
+              onClick={showAnswer ? handleHideAnswer : handleShowAnswer}
+              color="yellow.8"
+            >
+              {showAnswer ? "Hide Answer" : "Show Answer"}
+            </Button>
+          </Flex>
 
-                <Group grow gap='md'>
-                  <DebugItem title="Input Value" value={inputValue} />
-                  <Text style={{ fontFamily: 'Courier New, monospace' }}>Selected Article: {selectedArticle}</Text>
-                  <Text style={{ fontFamily: 'Courier New, monospace' }}>Type: {data[flashcardIndex].type}</Text>
-                </Group>
-                <Group grow gap='md'>
-                  <Text style={{ fontFamily: 'Courier New, monospace' }}>Show Answer: {showAnswer.toString()}</Text>
-                  <Text style={{ fontFamily: 'Courier New, monospace' }}>Correct: {correct.toString()}</Text>
-                  <Text style={{ fontFamily: 'Courier New, monospace' }}>
-                    Incorrect Attempt: {incorrectAttempt.toString()}
-                  </Text>
-                </Group>
-              </Flex>
-            </Paper>
-          )}
-        </Paper>
+
+          <Flex justify="center" align="center" direction="column" gap="md">
+            {correct && !shownAnswer && (
+              <Badge size="xl" variant="light" color="green">
+                You're correct!
+              </Badge>
+
+            )}
+
+            {shownAnswer && (
+              <Badge size="xl" variant="light" color="orange">
+                Nice try
+              </Badge>
+            )}
+
+            {incorrectAttempt && !correct && (
+              <Badge size="xl" variant="light" color="red">
+                Try again
+              </Badge>
+            )}
+
+            {/* model answer */}
+            {showAnswer && (
+              <Paper w='100%' radius="md" px='xl' py='xl' bg="gray.8" shadow="md">
+                <Text size="sm" fw={700} c="pink" align='center'>
+                  ANSWER:
+                </Text>
+
+                <Text size="xl" c="pink" align='center'>
+                  {data[flashcardIndex].article} {data[flashcardIndex].german ? data[flashcardIndex].german : ''} {data[flashcardIndex].german && data[flashcardIndex].plural && (' / ')} {data[flashcardIndex].plural ? `${data[flashcardIndex].plural}` : ''}
+                </Text>
+              </Paper>
+            )}
+          </Flex>
+
+        </Stack>
       )
       }
     </Container >

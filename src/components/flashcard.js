@@ -18,14 +18,14 @@ function Flashcard({ data, mode }) {
   return (
     <>
       <Paper radius="md" px='xl' py='xl' bg="gray.8" shadow="md">
-        <Flex justify="center" align="center" direction="row" gap={60}>
+        <Flex justify="center" align="center" direction="row" gap='lg'>
 
           <Flex w='80%' justify="center" align="center">
 
             {/* display the english word */}
             <Text
               align="center"
-              size='3em'
+              size='10vw'
               variant="gradient"
               gradient={{ from: 'pink', to: 'grape.2', deg: 0 }}
               fw={700}
@@ -45,10 +45,10 @@ function Flashcard({ data, mode }) {
 
           {/* word type */}
           <Flex justify="center" align="center" direction="column" gap="md">
-            <Badge px="lg" py="md" autoContrast size="lg" color={typeColor}>
+            <Badge px="md" py="md" autoContrast size="md" color={typeColor}>
               {data.type} {data.verbType && `(${data.verbType})`}
             </Badge>
-            <Badge px="lg" py="md" autoContrast size="lg" color={quizColor}>
+            <Badge px="md" py="md" autoContrast size="md" color={quizColor}>
               Quiz {data.quiz}
             </Badge>
           </Flex>
