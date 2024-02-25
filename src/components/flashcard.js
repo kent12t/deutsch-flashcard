@@ -17,7 +17,7 @@ function Flashcard({ data, mode }) {
 
   return (
     <>
-      <Paper radius="md" px='xl' py='xl' bg="gray.8" shadow="md">
+      <Paper radius="md" px='md' py='lg' bg="gray.8" shadow="md">
         <Flex justify="center" align="center" direction="row" gap='lg'>
 
           <Flex w='80%' justify="center" align="center">
@@ -25,7 +25,7 @@ function Flashcard({ data, mode }) {
             {/* display the english word */}
             <Text
               align="center"
-              size='10vw'
+              size='2rem'
               variant="gradient"
               gradient={{ from: 'pink', to: 'grape.2', deg: 0 }}
               fw={700}
