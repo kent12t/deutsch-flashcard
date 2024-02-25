@@ -228,7 +228,7 @@ function App() {
               <Box style={{ marginTop: "16px" }}>
                 {/* plural for nouns */}
                 <TextInput
-                  placeholder="Enter the plural form..."
+                  placeholder="Enter the plural form or leave blank if there's no plural form."
                   value={pluralValue}
                   onChange={handlePluralChange}
                   style={{ marginTop: "16px" }}

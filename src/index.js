@@ -6,14 +6,21 @@ import App from './App';
 import '@mantine/core/styles.css';
 // eslint-disable-next-line no-unused-vars
 import { createTheme, MantineProvider } from '@mantine/core';
+import { Button } from '@mantine/core';
 
-// const theme = createTheme({
-//   /** Put your mantine theme override here */
-// });
+const theme = createTheme({
+  components: {
+    Button: Button.extend({
+      defaultProps: {
+        color: 'pink',
+      },
+    }),
+  },
+});
 
 // eslint-disable-next-line no-undef
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <MantineProvider defaultColorScheme="dark">
+  <MantineProvider theme={theme} defaultColorScheme="dark">
     <App />
   </MantineProvider>
 );
