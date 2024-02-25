@@ -9,7 +9,8 @@ import {
   Stack,
   Text,
   TextInput,
-  Paper
+  Paper,
+  Image
 } from "@mantine/core";
 import { Flashcard } from "./components";
 
@@ -180,15 +181,21 @@ function App() {
     );
 
   return (
-    <Container size="md">
+    <Container px='5vw' h='100vh' size="md">
+      <Paper py='md' w='100%' justify='center'>
+        <Text size="xl" fw={900} variant="gradient" gradient={{ from: 'pink.8', to: 'grape.4', deg: 0 }} align='center' style={{ textShadow: '-2px -2px #eee' }}>
+          DEUTSCH FLASHCARDS
+        </Text>
+      </Paper>
+
       {/* Add a loading screen when data not ready */}
       {!dataReady && (
         <Box
+          h='90%'
           style={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            minHeight: "100vh",
           }}
         >
           <Text size="3rem" fw={600} c='pink'>Loading...</Text>
@@ -197,7 +204,8 @@ function App() {
 
       {/* only run when the data exists */}
       {data.length > 1 && (
-        <Stack py='lg' gap="lg" style={{ minHeight: "300px" }}>
+        <Stack h='100vh' py='lg' gap="lg" style={{ minHeight: "300px" }}>
+
           <Flashcard data={data[flashcardIndex]} mode="english" />
 
           {/* Answer Box */}
@@ -310,16 +318,23 @@ function App() {
                   ANSWER:
                 </Text>
 
-                <Text size="xl" c="pink" align='center'>
+                <Text size="xl" fw={300} c="pink" align='center'>
                   {data[flashcardIndex].article} {data[flashcardIndex].german ? data[flashcardIndex].german : ''} {data[flashcardIndex].german && data[flashcardIndex].plural && (' / ')} {data[flashcardIndex].plural ? `${data[flashcardIndex].plural}` : ''}
                 </Text>
               </Paper>
             )}
           </Flex>
-
         </Stack>
       )
       }
+
+      <Flex w='100%' justify="center" align="center" direction="row" gap="md" style={{ position: "absolute", left: '0px', bottom: '32px' }}>
+        <Image h={32} w={32}
+          fit="contain" alt="logo" src="./assets/kent.png" />
+        <Text size="sm" fw={600} variant="gradient" gradient={{ from: 'pink.5', to: 'grape.2', deg: 0 }}>
+          Created by Kent
+        </Text>
+      </Flex>
     </Container >
   );
 }
