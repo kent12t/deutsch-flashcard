@@ -1,11 +1,12 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Badge,
   Box,
   Button,
   Container,
   Flex,
+  MultiSelect,
   Stack,
   Text,
   TextInput,
@@ -14,41 +15,12 @@ import {
 } from "@mantine/core";
 import { Flashcard } from "./components";
 
-// Assuming you have your API token stored in a .env file
-// const apiKey = process.env.AIRTABLE_TOKEN;
-
 import Airtable from "airtable";
 
 const base = new Airtable({
   apiKey:
     "pat1JpGAPoqMI6wGK.766a65c9a30a8979775e623823e7ab97923eebcbb6f3788eeca62c7ebca14ada",
 }).base("appnrS9SBzzsSH6QZ");
-// var base = new Airtable({ apiKey: apiKey }).base('appnrS9SBzzsSH6QZ');
-
-// const data = [
-//   {
-//     english: "apple",
-//     german: "Apfel",
-//     type: "noun",
-//     article: "der",
-//     plural: "Äpfel",
-//   },
-//   {
-//     english: "house",
-//     german: "Haus",
-//     type: "noun",
-//     article: "das",
-//     plural: "Häuser",
-//   },
-//   {
-//     english: "order",
-//     german: "Bestellen",
-//     type: "others",
-//   },
-//   // Add more flashcard data as needed
-// ];
-
-var data = [];
 
 function App() {
   // random starting index
@@ -61,22 +33,82 @@ function App() {
   const [correct, setCorrect] = useState(false);
   const [incorrectAttempt, setIncorrectAttempt] = useState(false);
 
-  // const [gameState, setGameState] = useState("new");
-  // // states: new, correct, incorrect, incorrect showed answer
+  // Initialize rawData and data as state variables
+  const [rawData, setRawData] = useState([]);
+  const [data, setData] = useState([]);
+  const [dataReady, setDataReady] = useState(false);
 
-  // const handleGameState = (state) => {
-  //   setGameState(state);
+
+  const quizOptions = [
+    "1", "2", "3"
+  ];
+
+  // Load your data with useEffect on component mount
+  useEffect(() => {
+    base("vocab")
+      .select({ maxRecords: 999, view: "Grid view" })
+      .eachPage(
+        function page(records, fetchNextPage) {
+          // This function (`page`) will get called for each page of records.
+          const newRecords = records.map((record) => record.fields);
+
+          // Set rawData with the new records
+          setRawData((existingRecords) => [...existingRecords, ...newRecords]);
+          fetchNextPage();
+        },
+        function done(err) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+
+          // Indicate loading is done by setting dataReady to true
+          setDataReady(true);
+          console.log("Data ready: " + rawData.length);
+        }
+      );
+  }, []); // The empty array means this effect runs once on mount
+
+  // useEffect to update 'data' once rawData is populated
+  useEffect(() => {
+    if (rawData.length > 0) {
+      setData(rawData); // Now rawData is guaranteed to be populated
+      handleNextCard(); // Move to the next card now that data is ready
+    }
+  }, [rawData]); // This will run when rawData changes, after data is loaded
+
+  const [selectedQuizzes, setSelectedQuizzes] = useState(quizOptions);
+
+  // const handleQuizSelection = (quiz) => {
+  //   setSelectedQuizzes(quiz);
+  //   const filteredData = rawData.filter(item => selectedQuizzes.includes(item.quiz));
+  //   setData(filteredData);
+  //   handleNextCard();
+  //   console.log(data);
   // };
 
-  const [dataReady, setDataReady] = useState(false);
-  const handleDataReady = () => {
-    if (!dataReady) {
-      setDataReady(true);
-      // random starting index
-      setFlashcardIndex(Math.floor(Math.random() * data.length));
-      console.log(data.length);
+  // useEffect for filtering data when selectedQuizzes changes
+  useEffect(() => {
+    if (rawData.length > 0) {
+      const filteredData = rawData.filter(item => selectedQuizzes.includes(item.quiz));
+      setData(filteredData);
+      // When filteredData changes, if it's not empty, set the flashcardIndex
+      if (filteredData.length > 0) {
+        setFlashcardIndex(prevIndex => {
+          let newIndex;
+          do {
+            newIndex = Math.floor(Math.random() * filteredData.length);
+          } while (newIndex === prevIndex && data.length > 1); // Also ensure there's more than one card to avoid infinite loop
+          return newIndex;
+        });
+      } else {
+        // If there is no data, reset the index to null or initial state
+        setFlashcardIndex(null);
+      }
     }
-  };
+  }, [selectedQuizzes, rawData]); // This will run when selectedQuizzes or rawData changes
+
+
 
   const handlePluralChange = (event) => {
     setPluralValue(event.target.value);
@@ -120,14 +152,21 @@ function App() {
   };
 
   const handleNextCard = () => {
-    // setFlashcardIndex((prevIndex) => (prevIndex + 1) % data.length);
-    // random card each time
-    var newIndex = Math.floor(Math.random() * data.length);
-    while (newIndex === flashcardIndex) {
-      newIndex = Math.floor(Math.random() * data.length);
+    // Ensure that there is data before trying to set a new index
+    if (data.length > 0) {
+      setFlashcardIndex(prevIndex => {
+        let newIndex;
+        do {
+          newIndex = Math.floor(Math.random() * data.length);
+        } while (newIndex === prevIndex && data.length > 1); // Also ensure there's more than one card to avoid infinite loop
+        return newIndex;
+      });
+    } else {
+      // If there is no data, reset the index to null or initial state
+      setFlashcardIndex(null);
     }
-    setFlashcardIndex(newIndex);
 
+    // Resetting other state variables
     setInputValue("");
     setPluralValue("");
     setSelectedArticle("");
@@ -136,6 +175,7 @@ function App() {
     setCorrect(false);
     setIncorrectAttempt(false);
   };
+
 
   const handleShowAnswer = () => {
     setShowAnswer(true);
@@ -146,39 +186,7 @@ function App() {
     setShowAnswer(false);
   };
 
-  base("vocab")
-    .select({
-      maxRecords: 999,
-      view: "Grid view",
-    })
-    .eachPage(
-      function page(records, fetchNextPage) {
-        // This function (`page`) will get called for each page of records.
 
-        records.forEach(function (record) {
-          data.push(record.fields);
-        });
-
-        console.log("Retrieved");
-        // To fetch the next page of records, call `fetchNextPage`.
-        // If there are more records, `page` will get called again.
-        // If there are no more records, `done` will get called.
-        fetchNextPage();
-      },
-      function done(err) {
-        // console.log(airtable_data);
-        console.log("Data ready");
-        handleDataReady();
-        // data = airtable_data;
-
-        if (err) {
-          console.error(err);
-          return;
-        }
-
-        return;
-      }
-    );
 
   return (
     <Container px='5vw' h='100vh' size="md">
@@ -189,7 +197,7 @@ function App() {
       </Paper>
 
       {/* Add a loading screen when data not ready */}
-      {!dataReady && (
+      {!dataReady && data.length > 0 && (
         <Box
           h='90%'
           style={{
@@ -203,12 +211,25 @@ function App() {
       )}
 
       {/* only run when the data exists */}
-      {data.length > 1 && (
+      {dataReady & data.length > 0 && (
         <Stack h='100vh' py='lg' gap="lg" style={{ minHeight: "300px" }}>
+
+
 
           <Flashcard data={data[flashcardIndex]} mode="english" />
 
           {/* Answer Box */}
+
+          <MultiSelect
+            required
+            checkIconPosition="left"
+            label="Select Quizzes"
+            data={quizOptions}
+            defaultValue={quizOptions}
+            value={selectedQuizzes}
+            onChange={setSelectedQuizzes}
+            placeholder="Select quizzes"
+          />
 
           <Flex w="100%" justify="center" align="center" direction="column" gap="md">
 
