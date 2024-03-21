@@ -79,13 +79,15 @@ function App() {
 
   const [selectedQuizzes, setSelectedQuizzes] = useState(quizOptions);
 
-  // const handleQuizSelection = (quiz) => {
-  //   setSelectedQuizzes(quiz);
-  //   const filteredData = rawData.filter(item => selectedQuizzes.includes(item.quiz));
-  //   setData(filteredData);
-  //   handleNextCard();
-  //   console.log(data);
-  // };
+  const handleQuizSelection = (quiz) => {
+
+    if (quiz.length === 0) {
+      return;
+    }
+
+    setSelectedQuizzes(quiz);
+
+  };
 
   // useEffect for filtering data when selectedQuizzes changes
   useEffect(() => {
@@ -221,13 +223,12 @@ function App() {
           {/* Answer Box */}
 
           <MultiSelect
-            required
+            size="md"
             checkIconPosition="left"
-            label="Select Quizzes"
             data={quizOptions}
             defaultValue={quizOptions}
             value={selectedQuizzes}
-            onChange={setSelectedQuizzes}
+            onChange={handleQuizSelection}
             placeholder="Select quizzes"
           />
 
