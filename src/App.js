@@ -40,7 +40,7 @@ function App() {
 
 
   const quizOptions = [
-    "1", "2", "3"
+    "1", "2", "3", "4"
   ];
 
   // Load your data with useEffect on component mount
