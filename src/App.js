@@ -232,8 +232,8 @@ function App() {
 
 
   return (
-    <Container px='5vw' h='100vh' size="md">
-      <Paper py='md' w='100%' justify='center'>
+    <Container px='5vw' h='100vh' size="md" style={{ overflowY: "none" }}>
+      <Paper h='5vh' py='md' w='100%' justify='center'>
         <Text size="xl" fw={900} variant="gradient" gradient={{ from: 'pink.8', to: 'grape.4', deg: 0 }} align='center' style={{ textShadow: '-2px -2px #eee' }}>
           DEUTSCH FLASHCARDS
         </Text>
@@ -242,7 +242,7 @@ function App() {
       {/* Add a loading screen when data not ready */}
       {!dataReady && data.length > 0 && (
         <Box
-          h='90%'
+          h='90vh'
           style={{
             display: "flex",
             justifyContent: "center",
@@ -255,7 +255,7 @@ function App() {
 
       {/* only run when the data exists */}
       {dataReady & data.length > 0 && (
-        <Stack h='100vh' py='lg' gap="lg" style={{ minHeight: "300px" }}>
+        <Stack h='90vh' py='lg' gap="lg" style={{ minHeight: "300px", overflowY: "none" }} >
 
 
 
@@ -264,7 +264,7 @@ function App() {
           {/* Answer Box */}
 
           <MultiSelect
-            size="md"
+            size="lg"
             checkIconPosition="left"
             data={quizOptions}
             defaultValue={quizOptions}
@@ -391,7 +391,7 @@ function App() {
       )
       }
 
-      <Flex w='100%' justify="center" align="center" direction="row" gap="md" style={{ position: "absolute", left: '0px', bottom: '32px' }}>
+      <Flex w='100%' h='5vh' justify="center" align="center" direction="row" gap="md" style={{ position: "relative", left: '0px', bottom: '32px' }}>
         <Image h={32} w={32}
           fit="contain" alt="logo" src="./assets/kent.png" />
         <Text size="sm" fw={600} variant="gradient" gradient={{ from: 'pink.5', to: 'grape.2', deg: 0 }}>
