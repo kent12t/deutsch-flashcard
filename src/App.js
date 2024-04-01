@@ -127,14 +127,21 @@ function App() {
   const handleCheckAnswer = () => {
     const { german, article, type, plural } = data[flashcardIndex];
 
+    // console.log(german, article, type, plural)
+    // console.log("inputValue: ", inputValue, "pluralValue: ", pluralValue, "selectedArticle: ", selectedArticle)
+
     if (type == "noun") {
       // if german exist, check german and article and plural
-      var correctSingular = inputValue.trim() === german.trim();
-      var correctPlural = pluralValue.trim() === plural.trim();
+      var correctSingular = inputValue?.trim() === german?.trim();
+      var correctPlural = pluralValue?.trim() === plural?.trim();
+
+      // console.log("correctSingular: ", correctSingular, "correctPlural: ", correctPlural)
 
       // check if german (singular) and plural exists in the database
-      var germanExist = german !== "";
-      var pluralExist = plural !== "";
+      var germanExist = german != undefined;
+      var pluralExist = plural != undefined;
+
+      // console.log("germanExist: ", germanExist, "pluralExist: ", pluralExist)
 
       // checks article
       var correctArticle = selectedArticle.toLowerCase() === article.toLowerCase();
@@ -143,26 +150,37 @@ function App() {
       var singularCheck = germanExist ? correctSingular : null;
       var pluralCheck = pluralExist ? correctPlural : null;
 
-      if (singularCheck == null) {
+      // console.log("singularCheck: ", singularCheck, "pluralCheck: ", pluralCheck)
+
+      if (!correctArticle) {
+        setIncorrectAttempt(true);
+        // console.log("incorrect - article check")
+      } else if (singularCheck == null) {
         // case of no singular, only plural check is needed
-        if (pluralCheck && correctArticle) {
+        if (pluralCheck) {
           setCorrect(true);
+          // console.log("correct - plural check only")
         } else {
           setIncorrectAttempt(true);
+          // console.log("incorrect - plural check only")
         }
       } else if (pluralCheck == null) {
         // case of no plural, only singular check is needed
-        if (singularCheck && correctArticle) {
+        if (singularCheck) {
           setCorrect(true);
+          // console.log("correct - singular check only")
         } else {
           setIncorrectAttempt(true);
+          // console.log("incorrect - singular check only")
         }
-      } else if (singularCheck != null && pluralCheck != null && correctArticle) {
+      } else if (singularCheck != null && pluralCheck != null && pluralCheck && singularCheck) {
         // if neither singular nor plural is null, check both and also article
         setCorrect(true);
+        // console.log("correct - both singular and plural check")
       } else {
         // else if any of the checks fail, set incorrect attempt
         setIncorrectAttempt(true);
+        // console.log("incorrect - both singular and plural check")
       }
 
 
@@ -344,7 +362,7 @@ function App() {
 
             )}
 
-            {shownAnswer && (
+            {shownAnswer && !incorrectAttempt && (
               <Badge size="xl" variant="light" color="orange">
                 Nice try
               </Badge>
