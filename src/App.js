@@ -129,22 +129,45 @@ function App() {
 
     if (type == "noun") {
       // if german exist, check german and article and plural
-      var correctSingular = inputValue === german;
-      var correctPlural = pluralValue === plural;
+      var correctSingular = inputValue.trim() === german.trim();
+      var correctPlural = pluralValue.trim() === plural.trim();
 
+      // check if german (singular) and plural exists in the database
       var germanExist = german !== "";
       var pluralExist = plural !== "";
 
-      if (
-        germanExist ? correctSingular : true &&
-          pluralExist ? correctPlural : true &&
-        selectedArticle.toLowerCase() === article.toLowerCase()
-      ) {
+      // checks article
+      var correctArticle = selectedArticle.toLowerCase() === article.toLowerCase();
+
+      // checks if the existing answers are correct, or else set to null
+      var singularCheck = germanExist ? correctSingular : null;
+      var pluralCheck = pluralExist ? correctPlural : null;
+
+      if (singularCheck == null) {
+        // case of no singular, only plural check is needed
+        if (pluralCheck && correctArticle) {
+          setCorrect(true);
+        } else {
+          setIncorrectAttempt(true);
+        }
+      } else if (pluralCheck == null) {
+        // case of no plural, only singular check is needed
+        if (singularCheck && correctArticle) {
+          setCorrect(true);
+        } else {
+          setIncorrectAttempt(true);
+        }
+      } else if (singularCheck != null && pluralCheck != null && correctArticle) {
+        // if neither singular nor plural is null, check both and also article
         setCorrect(true);
       } else {
+        // else if any of the checks fail, set incorrect attempt
         setIncorrectAttempt(true);
       }
+
+
     } else {
+      // if not noun, only check the input value, no plural or article
       if (inputValue.toLowerCase() === german.toLowerCase()) {
         setCorrect(true);
       } else {
@@ -341,7 +364,7 @@ function App() {
                 </Text>
 
                 <Text size="xl" fw={300} c="pink" align='center'>
-                  {data[flashcardIndex].article} {data[flashcardIndex].german ? data[flashcardIndex].german : ''} {data[flashcardIndex].german && data[flashcardIndex].plural && (' / ')} {data[flashcardIndex].plural ? `${data[flashcardIndex].plural}` : ''}
+                  {data[flashcardIndex].article ? data[flashcardIndex].article : ''} {data[flashcardIndex].german ? data[flashcardIndex].german : ''} {data[flashcardIndex].plural ? ` / ${data[flashcardIndex].plural}` : ''}
                 </Text>
               </Paper>
             )}
