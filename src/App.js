@@ -11,7 +11,7 @@ import {
   Text,
   TextInput,
   Paper,
-  Image
+  Image,
 } from "@mantine/core";
 import { Flashcard } from "./components";
 
@@ -38,10 +38,7 @@ function App() {
   const [data, setData] = useState([]);
   const [dataReady, setDataReady] = useState(false);
 
-
-  const quizOptions = [
-    "1", "2", "3", "4"
-  ];
+  const quizOptions = ["1", "2", "3", "4"];
 
   // Load your data with useEffect on component mount
   useEffect(() => {
@@ -80,23 +77,23 @@ function App() {
   const [selectedQuizzes, setSelectedQuizzes] = useState(quizOptions);
 
   const handleQuizSelection = (quiz) => {
-
     if (quiz.length === 0) {
       return;
     }
 
     setSelectedQuizzes(quiz);
-
   };
 
   // useEffect for filtering data when selectedQuizzes changes
   useEffect(() => {
     if (rawData.length > 0) {
-      const filteredData = rawData.filter(item => selectedQuizzes.includes(item.quiz));
+      const filteredData = rawData.filter((item) =>
+        selectedQuizzes.includes(item.quiz)
+      );
       setData(filteredData);
       // When filteredData changes, if it's not empty, set the flashcardIndex
       if (filteredData.length > 0) {
-        setFlashcardIndex(prevIndex => {
+        setFlashcardIndex((prevIndex) => {
           let newIndex;
           do {
             newIndex = Math.floor(Math.random() * filteredData.length);
@@ -109,8 +106,6 @@ function App() {
       }
     }
   }, [selectedQuizzes, rawData]); // This will run when selectedQuizzes or rawData changes
-
-
 
   const handlePluralChange = (event) => {
     setPluralValue(event.target.value);
@@ -144,7 +139,8 @@ function App() {
       // console.log("germanExist: ", germanExist, "pluralExist: ", pluralExist)
 
       // checks article
-      var correctArticle = selectedArticle.toLowerCase() === article.toLowerCase();
+      var correctArticle =
+        selectedArticle.toLowerCase() === article.toLowerCase();
 
       // checks if the existing answers are correct, or else set to null
       var singularCheck = germanExist ? correctSingular : null;
@@ -173,7 +169,12 @@ function App() {
           setIncorrectAttempt(true);
           // console.log("incorrect - singular check only")
         }
-      } else if (singularCheck != null && pluralCheck != null && pluralCheck && singularCheck) {
+      } else if (
+        singularCheck != null &&
+        pluralCheck != null &&
+        pluralCheck &&
+        singularCheck
+      ) {
         // if neither singular nor plural is null, check both and also article
         setCorrect(true);
         // console.log("correct - both singular and plural check")
@@ -182,11 +183,9 @@ function App() {
         setIncorrectAttempt(true);
         // console.log("incorrect - both singular and plural check")
       }
-
-
     } else {
       // if not noun, only check the input value, no plural or article
-      if (inputValue.toLowerCase() === german.toLowerCase()) {
+      if (inputValue?.trim().toLowerCase() === german?.trim().toLowerCase()) {
         setCorrect(true);
       } else {
         setIncorrectAttempt(true);
@@ -197,7 +196,7 @@ function App() {
   const handleNextCard = () => {
     // Ensure that there is data before trying to set a new index
     if (data.length > 0) {
-      setFlashcardIndex(prevIndex => {
+      setFlashcardIndex((prevIndex) => {
         let newIndex;
         do {
           newIndex = Math.floor(Math.random() * data.length);
@@ -219,7 +218,6 @@ function App() {
     setIncorrectAttempt(false);
   };
 
-
   const handleShowAnswer = () => {
     setShowAnswer(true);
     setShownAnswer(true);
@@ -229,12 +227,17 @@ function App() {
     setShowAnswer(false);
   };
 
-
-
   return (
-    <Container px='5vw' h='100vh' size="md" style={{ overflowY: "none" }}>
-      <Paper h='5vh' py='md' w='100%' justify='center'>
-        <Text size="xl" fw={900} variant="gradient" gradient={{ from: 'pink.8', to: 'grape.4', deg: 0 }} align='center' style={{ textShadow: '-2px -2px #eee' }}>
+    <Container px="5vw" h="100vh" size="md" style={{ overflowY: "none" }}>
+      <Paper h="5vh" py="md" w="100%" justify="center">
+        <Text
+          size="xl"
+          fw={900}
+          variant="gradient"
+          gradient={{ from: "pink.8", to: "grape.4", deg: 0 }}
+          align="center"
+          style={{ textShadow: "-2px -2px #eee" }}
+        >
           DEUTSCH FLASHCARDS
         </Text>
       </Paper>
@@ -242,23 +245,27 @@ function App() {
       {/* Add a loading screen when data not ready */}
       {!dataReady && data.length > 0 && (
         <Box
-          h='90vh'
+          h="90vh"
           style={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
           }}
         >
-          <Text size="3rem" fw={600} c='pink'>Loading...</Text>
+          <Text size="3rem" fw={600} c="pink">
+            Loading...
+          </Text>
         </Box>
       )}
 
       {/* only run when the data exists */}
-      {dataReady & data.length > 0 && (
-        <Stack h='90vh' py='lg' gap="lg" style={{ minHeight: "300px", overflowY: "none" }} >
-
-
-
+      {dataReady & (data.length > 0) && (
+        <Stack
+          h="90vh"
+          py="lg"
+          gap="lg"
+          style={{ minHeight: "300px", overflowY: "none" }}
+        >
           <Flashcard data={data[flashcardIndex]} mode="english" />
 
           {/* Answer Box */}
@@ -273,37 +280,47 @@ function App() {
             placeholder="Select quizzes"
           />
 
-          <Flex w="100%" justify="center" align="center" direction="column" gap="md">
-
+          <Flex
+            w="100%"
+            justify="center"
+            align="center"
+            direction="column"
+            gap="md"
+          >
             {/* article select -> no article for non-nouns */}
             {data[flashcardIndex].type == "noun" && (
-
-              <Flex w='100%' justify="center" align="center" direction="row" gap="md">
-
+              <Flex
+                w="100%"
+                justify="center"
+                align="center"
+                direction="row"
+                gap="md"
+              >
                 {["der", "die", "das"].map((article) => (
                   <Button
                     size="lg"
                     radius="md"
                     key={article}
                     onClick={() => handleArticleSelection(article)}
-                    variant={
-                      selectedArticle === article ? "outline" : "filled"
-                    }
+                    variant={selectedArticle === article ? "outline" : "filled"}
                   >
                     {article}
                   </Button>
                 ))}
-
               </Flex>
-
             )}
 
-            <Flex w="100%" justify='stretch' align='center' direction='column' gap="md">
-
+            <Flex
+              w="100%"
+              justify="stretch"
+              align="center"
+              direction="column"
+              gap="md"
+            >
               {/* answer input */}
 
               <TextInput
-                w='100%'
+                w="100%"
                 size="lg"
                 radius="md"
                 placeholder="Answer (case-sensitive)"
@@ -312,38 +329,34 @@ function App() {
               />
 
               {/* plural for nouns */}
-              {data[flashcardIndex].type == "noun" &&
-
+              {data[flashcardIndex].type == "noun" && (
                 <TextInput
-                  w='100%'
+                  w="100%"
                   size="lg"
                   radius="md"
                   placeholder="Plural or leave blank"
                   value={pluralValue}
                   onChange={handlePluralChange}
                 />
-              }
+              )}
             </Flex>
           </Flex>
 
           {/* check and answer buttons */}
 
           <Flex justify="center" align="center" direction="row" gap="lg">
-
-            {correct || shownAnswer ?
+            {correct || shownAnswer ? (
               <Button size="lg" color="green.7" onClick={handleNextCard}>
                 Next Card
-              </Button> :
+              </Button>
+            ) : (
               <Button size="lg" onClick={handleCheckAnswer}>
                 Check Answer
               </Button>
-
-            }
+            )}
 
             <Button
-              variant={
-                showAnswer ? "outline" : "filled"
-              }
+              variant={showAnswer ? "outline" : "filled"}
               disabled={correct}
               size="lg"
               onClick={showAnswer ? handleHideAnswer : handleShowAnswer}
@@ -353,13 +366,11 @@ function App() {
             </Button>
           </Flex>
 
-
           <Flex justify="center" align="center" direction="column" gap="md">
             {correct && !shownAnswer && (
               <Badge size="xl" variant="light" color="green">
                 You're correct!
               </Badge>
-
             )}
 
             {shownAnswer && !incorrectAttempt && (
@@ -376,29 +387,55 @@ function App() {
 
             {/* model answer */}
             {showAnswer && (
-              <Paper w='100%' radius="md" px='xl' py='xl' bg="gray.8" shadow="md">
-                <Text size="sm" fw={700} c="pink" align='center'>
+              <Paper
+                w="100%"
+                radius="md"
+                px="xl"
+                py="xl"
+                bg="gray.8"
+                shadow="md"
+              >
+                <Text size="sm" fw={700} c="pink" align="center">
                   ANSWER:
                 </Text>
 
-                <Text size="xl" fw={300} c="pink" align='center'>
-                  {data[flashcardIndex].article ? data[flashcardIndex].article : ''} {data[flashcardIndex].german ? data[flashcardIndex].german : ''} {data[flashcardIndex].plural ? ` / ${data[flashcardIndex].plural}` : ''}
+                <Text size="xl" fw={300} c="pink" align="center">
+                  {data[flashcardIndex].article
+                    ? data[flashcardIndex].article
+                    : ""}{" "}
+                  {data[flashcardIndex].german
+                    ? data[flashcardIndex].german
+                    : ""}{" "}
+                  {data[flashcardIndex].plural
+                    ? ` / ${data[flashcardIndex].plural}`
+                    : ""}
                 </Text>
               </Paper>
             )}
           </Flex>
         </Stack>
-      )
-      }
+      )}
 
-      <Flex w='100%' h='5vh' justify="center" align="center" direction="row" gap="md" style={{ position: "relative", left: '0px', bottom: '32px' }}>
-        <Image h={32} w={32}
-          fit="contain" alt="logo" src="./assets/kent.png" />
-        <Text size="sm" fw={600} variant="gradient" gradient={{ from: 'pink.5', to: 'grape.2', deg: 0 }}>
+      <Flex
+        w="100%"
+        h="5vh"
+        justify="center"
+        align="center"
+        direction="row"
+        gap="md"
+        style={{ position: "relative", left: "0px", bottom: "32px" }}
+      >
+        <Image h={32} w={32} fit="contain" alt="logo" src="./assets/kent.png" />
+        <Text
+          size="sm"
+          fw={600}
+          variant="gradient"
+          gradient={{ from: "pink.5", to: "grape.2", deg: 0 }}
+        >
           Created by Kent
         </Text>
       </Flex>
-    </Container >
+    </Container>
   );
 }
 
