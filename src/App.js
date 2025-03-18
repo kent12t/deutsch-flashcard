@@ -12,6 +12,8 @@ import {
   TextInput,
   Paper,
   Image,
+  Center,
+  Loader,
 } from "@mantine/core";
 import { Flashcard } from "./components";
 
@@ -227,6 +229,64 @@ function App() {
     setShowAnswer(false);
   };
 
+  // If data is not ready, show a full-screen loading state
+  if (!dataReady) {
+    return (
+      <Box
+        style={{
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          background: '#1A1B1E'
+        }}
+      >
+        <Paper h="5vh" py="md" w="100%" justify="center">
+          <Text
+            size="xl"
+            fw={900}
+            variant="gradient"
+            gradient={{ from: "pink.8", to: "grape.4", deg: 0 }}
+            align="center"
+            style={{ textShadow: "-2px -2px #eee" }}
+          >
+            DEUTSCH FLASHCARDS
+          </Text>
+        </Paper>
+
+        <Center style={{ flex: 1 }}>
+          <Flex direction="column" align="center" gap="lg">
+            <Loader size="xl" color="pink" />
+            <Text size="2rem" fw={600} c="pink">
+              Fetching data...
+            </Text>
+          </Flex>
+        </Center>
+
+        <Flex
+          w="100%"
+          h="5vh"
+          justify="center"
+          align="center"
+          direction="row"
+          gap="md"
+          style={{ position: "relative", left: "0px", bottom: "32px" }}
+        >
+          <Image h={32} w={32} fit="contain" alt="logo" src="./assets/kent.png" />
+          <Text
+            size="sm"
+            fw={600}
+            variant="gradient"
+            gradient={{ from: "pink.5", to: "grape.2", deg: 0 }}
+          >
+            Created by Kent
+          </Text>
+        </Flex>
+      </Box>
+    );
+  }
+
   return (
     <Container px="5vw" h="100vh" size="md" style={{ overflowY: "none" }}>
       <Paper h="5vh" py="md" w="100%" justify="center">
@@ -242,24 +302,8 @@ function App() {
         </Text>
       </Paper>
 
-      {/* Add a loading screen when data not ready */}
-      {!dataReady && data.length > 0 && (
-        <Box
-          h="90vh"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text size="3rem" fw={600} c="pink">
-            Loading...
-          </Text>
-        </Box>
-      )}
-
       {/* only run when the data exists */}
-      {dataReady & (data.length > 0) && (
+      {data.length > 0 && (
         <Stack
           h="90vh"
           py="lg"
