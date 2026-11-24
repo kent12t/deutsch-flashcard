@@ -18,6 +18,7 @@ export default [
     rules: {
       "no-unused-vars": "warn",
       "no-console": "off",
+      "react/prop-types": "off", // React 19 ignores propTypes; no prop-types dependency
     },
   },
 ];
