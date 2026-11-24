@@ -1,35 +1,35 @@
-# German Flashcard
+# Deutsch Flashcards
 
-This repository contains a collection of German flashcards created to enhance German language skills. I built it for me and my classmates to learn for our German 1 class, which is the equivalent to half of A1 German syllabus.
+Started as a vocab drill for my German 1 class (half of A1). Now it's a full self-study app that takes you from **A1 to B1**.
 
-The app is built using `create-react-app` and is deployed on Vercel. You can check it out [here](https://deutsch-flashcard.vercel.app/).
+Live: https://deutsch-flashcard.vercel.app/
 
-## Features
+## What's inside
 
-- Vocabulary flashcards
-- Article selection for nouns
-- Plural nouns
-- Filtering system for quizzes 1-4
-- Indicator for vocab type and quiz number
+- **Learning path**: 19 units across A1 → A2 → B1. The first four are my original class quizzes (594 words); the other 15 add ~370 new words (family, home, health, travel, work, environment, media, politics, relationships…).
+- **Grammar**: 22 lessons (sein, present tense, word order, articles, accusative, dative, modal & separable verbs, Perfekt, Präteritum, two-way prepositions, adjective endings, Konjunktiv II, passive, relative clauses…), each with explanations, tables, examples you can listen to, and exercises (multiple choice, fill the gap, build the sentence).
+- **Smart practice**: spaced repetition (Leitner boxes). Question types get harder as a word gets stronger: multiple choice → article → typing → listening → plural.
+- **Forgiving checking**: accepts `ae/oe/ue/ss`, wrong capitals and one-letter typos, and tells you what to fix. Type `der Tisch` or use the article buttons.
+- **Arcade**: Artikel-Blitz (der/die/das in 60 s), Wort-Paare (matching), Verb-Gym (conjugation sprints in Präsens, Perfekt or Präteritum), Hör-Training (listen and type).
+- **Gamification**: XP and levels, daily goal, streaks with streak freezes, daily quests, combos, 18 achievements, and an activity heatmap.
+- **Your own words**: add words you come across; they join your reviews.
+- **Exam mode / class decks**: the original strict mode (article + word + plural), filtered by Quiz 1–4.
+- Pronunciation via the browser's German voice, sound effects, light/dark theme, and progress export/import.
 
-## Getting Started
+Progress is stored in `localStorage`. Vocabulary is bundled in `src/data/` (no backend).
 
-1. Clone the repository:
-  ```bash
-  git clone https://github.com/yourusername/german-flashcard.git
-  ```
+## Development
 
-2. Navigate to the project directory:
-  ```bash
-  cd german-flashcard
-  ```
+```bash
+npm install
+npm run dev     # http://localhost:3000
+npm run lint
+npm run build
+```
 
-3. Install the dependencies:
-  ```bash
-  npm install
-  ```
+Content lives in plain JS files that are easy to edit:
 
-4. Start the development server:
-  ```
-  npm start
-  ```
+- `src/data/curriculum.js`: units and vocab (`n|der|Tisch|Tische|table`)
+- `src/data/grammar.js`: lessons and exercises
+- `src/data/verbs.js`: conjugation tables for the Verb-Gym
+- `src/data/classDeck.json`: snapshot of the original class vocab
